@@ -1,0 +1,65 @@
+-- Create the Customers table
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    City VARCHAR(50)
+);
+
+-- Create the Orders table with OrderID as an auto-increment column
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT,
+    Product VARCHAR(50),
+    Quantity INT,
+    OrderDate DATE,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+-- Insert sample data into Customers table
+INSERT INTO Customers (CustomerID, FirstName, LastName, City) VALUES
+(1, 'John', 'Smith', 'New York'),
+(2, 'Emma', 'Johnson', 'Los Angeles'),
+(3, 'Liam', 'Williams', 'Chicago');
+
+-- Insert sample data into Orders table
+INSERT INTO Orders (CustomerID, Product, Quantity, OrderDate) VALUES
+(1, 'Laptop', 1, '2024-10-01'),
+(2, 'Smartphone', 2, '2024-10-02'),
+(1, 'Tablet', 1, '2024-10-03');
+
+-- Display data after initial inserts
+SELECT * FROM Customers;
+SELECT * FROM Orders;
+
+-- Insert a new order for a specific customer
+INSERT INTO Orders (CustomerID, Product, Quantity, OrderDate)
+SELECT CustomerID, 'Headphones', 1, '2024-11-01'
+FROM Customers
+WHERE LastName = 'Smith' AND FirstName = 'John';
+
+-- Display data after the INSERT with JOIN
+SELECT * FROM Orders;
+
+-- Update the quantity of a product for a specific customer
+UPDATE Orders
+JOIN Customers ON Orders.CustomerID = Customers.CustomerID
+SET Orders.Quantity = 3
+WHERE Customers.LastName = 'Johnson' AND Orders.Product = 'Smartphone';
+
+-- Display data after the UPDATE with JOIN
+SELECT * FROM Orders;
+
+-- Delete all orders for customers from a specific city
+DELETE Orders
+FROM Orders
+JOIN Customers ON Orders.CustomerID = Customers.CustomerID
+WHERE Customers.City = 'New York';
+
+-- Display data after the DELETE with JOIN
+SELECT * FROM Orders;
+
+-- Select all orders along with customer details
+SELECT Orders.OrderID, Customers.FirstName, Customers.LastName, Customers.City, Orders.Product, Orders.Quantity, Orders.OrderDate
+FROM Orders
+JOIN Customers ON Orders.CustomerID = Customers.CustomerID;

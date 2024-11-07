@@ -1,0 +1,36 @@
+sqlplus
+SET SERVEROUTPUT ON;
+CREATE TABLE Library (  lid INT,  booktype VARCHAR(20),  bookcount INT,  issuebookcount INT );
+CREATE TABLE LibraryAudit (  lid INT,  booktype VARCHAR(20),  bookcount INT,  issuebookcount INT );
+INSERT INTO Library VALUES (1, 'historic', 50, 10);
+INSERT INTO Library VALUES (2, 'story', 56, 20);
+INSERT INTO Library VALUES (3, 'novel', 74, 9);
+
+
+program.sql
+
+CREATE OR REPLACE TRIGGER t1
+BEFORE UPDATE OR DELETE ON LIBRARY
+FOR EACH ROW
+DECLARE
+    lid INT;
+    btype VARCHAR(20);
+    bcount INT;
+    icount INT;
+BEGIN
+    lid := :old.lid;
+    btype := :old.booktype;
+    bcount := :old.bookcount;
+    icount := :old.issuebookcount;
+    INSERT INTO LibraryAudit VALUES (lid, btype, bcount, icount);
+END;
+/
+
+@program.sql
+
+UPDATE Library SET lid = 10 WHERE lid = 1;
+UPDATE Library SET lid = 10 WHERE lid = 2;
+UPDATE Library SET lid = 1000 WHERE lid = 3;
+
+SELECT * FROM LibraryAudit;
+SELECT * FROM Library;
